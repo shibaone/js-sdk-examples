@@ -192,15 +192,15 @@ async function transitState() {
 
   await dataStorage.credential.saveCredential(credential);
 
-  console.log('================= generate Iden3SparseMerkleTreeProof =======================');
+  console.log('================= generate Iden3SparseMerkleTreeProof ===================\n====');
 
   const res = await identityWallet.addCredentialsToMerkleTree([credential], issuerDID);
 
-  console.log('================= push states to rhs ===================');
+  console.log('================= push states to rhs ===================\n');
 
   await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
 
-  console.log('================= publish to blockchain ===================');
+  console.log('================= publish to blockchain ===================\n');
 
   const ethSigner = new ethers.Wallet(walletKey, (dataStorage.states as EthStateStorage).provider);
   const txId = await proofService.transitState(
@@ -210,7 +210,7 @@ async function transitState() {
     dataStorage.states,
     ethSigner
   );
-  console.log(txId);
+  console.log('Transaction Hash:', txId);
 }
 
 async function transitStateThirdPartyDID() {
@@ -280,16 +280,16 @@ async function transitStateThirdPartyDID() {
   await dataStorage.credential.saveCredential(credential);
 
   console.log(
-    '================= third party: generate Iden3SparseMerkleTreeProof ======================='
+    '================= third party: generate Iden3SparseMerkleTreeProof ===================\n===='
   );
 
   const res = await identityWallet.addCredentialsToMerkleTree([credential], issuerDID);
 
-  console.log('================= third party: push states to rhs ===================');
+  console.log('================= third party: push states to rhs ===================\n');
 
   await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
 
-  console.log('================= publish to blockchain ===================');
+  console.log('================= publish to blockchain ===================\n');
 
   const ethSigner = new ethers.Wallet(
     process.env.THIRD_PARTY_WALLET_KEY as string,
@@ -344,15 +344,18 @@ async function generateProofs(useMongoStore = false) {
 
   await dataStorage.credential.saveCredential(credential);
 
-  console.log('================= generate Iden3SparseMerkleTreeProof =======================');
+  console.log('================= generate Iden3SparseMerkleTreeProof ===================\n====');
 
   const res = await identityWallet.addCredentialsToMerkleTree([credential], issuerDID);
 
-  console.log('================= push states to rhs ===================');
+  console.log('================= push states to rhs ===================\n');
 
-  await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
+  await identityWallet.publishRevocationInfoByCredentialStatusType(
+    issuerDID,
+    CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023
+  );
 
-  console.log('================= publish to blockchain ===================');
+  console.log('================= publish to blockchain ===================\n');
 
   const ethSigner = new ethers.Wallet(walletKey, (dataStorage.states as EthStateStorage).provider);
   const txId = await proofService.transitState(
@@ -364,7 +367,7 @@ async function generateProofs(useMongoStore = false) {
   );
   console.log(txId);
 
-  console.log('================= generate credentialAtomicSigV2 ===================');
+  console.log('================= generate credentialAtomicSigV2 ===================\n');
 
   const proofReqSig: ZeroKnowledgeProofRequest = createKYCAgeCredentialRequest(
     CircuitId.AtomicQuerySigV2,
@@ -379,7 +382,7 @@ async function generateProofs(useMongoStore = false) {
   );
   console.log('valid: ', sigProofOk);
 
-  console.log('================= generate credentialAtomicMTPV2 ===================');
+  console.log('================= generate credentialAtomicMTPV2 ===================\n');
 
   const credsWithIden3MTPProof = await identityWallet.generateIden3SparseMerkleTreeProof(
     issuerDID,
@@ -417,7 +420,7 @@ async function generateProofs(useMongoStore = false) {
 }
 
 async function handleAuthRequest(useMongoStore = false) {
-  console.log('=============== handle auth request ===============');
+  console.log('=============== handle auth request ===============\n');
 
   let dataStorage, credentialWallet, identityWallet;
   if (useMongoStore) {
@@ -442,8 +445,8 @@ async function handleAuthRequest(useMongoStore = false) {
     ...defaultIdentityCreationOptions
   });
 
-  console.log('=============== user did ===============');
-  console.log(userDID.string());
+  console.log('=============== user did ===============\n');
+  console.log(userDID);
 
   const { did: issuerDID, credential: issuerAuthBJJCredential } =
     await identityWallet.createIdentity({ ...defaultIdentityCreationOptions });
@@ -453,15 +456,15 @@ async function handleAuthRequest(useMongoStore = false) {
 
   await dataStorage.credential.saveCredential(credential);
 
-  console.log('================= generate Iden3SparseMerkleTreeProof =======================');
+  console.log('================= generate Iden3SparseMerkleTreeProof =======================\n');
 
   const res = await identityWallet.addCredentialsToMerkleTree([credential], issuerDID);
 
-  console.log('================= push states to rhs ===================');
+  console.log('================= push states to rhs ===================\n');
 
   await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
 
-  console.log('================= publish to blockchain ===================');
+  console.log('================= publish to blockchain ===================\n');
 
   const ethSigner = new ethers.Wallet(walletKey, (dataStorage.states as EthStateStorage).provider);
   const txId = await proofService.transitState(
@@ -471,16 +474,18 @@ async function handleAuthRequest(useMongoStore = false) {
     dataStorage.states,
     ethSigner
   );
-  console.log(txId);
+  console.log('Transaction Hash: ', txId);
 
-  console.log('================= generate credentialAtomicSigV2 ===================');
+  console.log('================= generate credentialAtomicSigV2 ===================\n');
 
   const proofReqSig: ZeroKnowledgeProofRequest = createKYCAgeCredentialRequest(
     CircuitId.AtomicQuerySigV2,
     credentialRequest
   );
 
-  console.log('=================  credential auth request ===================');
+  console.log(
+    '=================  credential auth request created on the verifier side ===================\n'
+  );
 
   const authRequest: AuthorizationRequestMessage = {
     id: 'fe6354fe-3db2-48c2-a779-e39c2dda8d90',
@@ -495,7 +500,7 @@ async function handleAuthRequest(useMongoStore = false) {
       reason: 'verify age'
     }
   };
-  console.log(JSON.stringify(authRequest));
+  console.log('Auth Request', JSON.stringify(authRequest));
 
   const credsWithIden3MTPProof = await identityWallet.generateIden3SparseMerkleTreeProof(
     issuerDID,
@@ -503,14 +508,18 @@ async function handleAuthRequest(useMongoStore = false) {
     txId
   );
 
-  console.log(credsWithIden3MTPProof);
+  console.log(
+    'Credentials With Iden3 MTP Proof',
+    credsWithIden3MTPProof,
+    JSON.stringify(credsWithIden3MTPProof)
+  );
   await credentialWallet.saveAll(credsWithIden3MTPProof);
 
   const authRawRequest = new TextEncoder().encode(JSON.stringify(authRequest));
 
   // * on the user side */
 
-  console.log('============== handle auth request ==============');
+  console.log('============== handle auth request on the user side ==============\n');
   const authV2Data = await circuitStorage.loadCircuitData(CircuitId.AuthV2);
   const pm = await initPackageManager(
     authV2Data,
@@ -520,7 +529,8 @@ async function handleAuthRequest(useMongoStore = false) {
 
   const authHandler = new AuthHandler(pm, proofService);
   const authHandlerRequest = await authHandler.handleAuthorizationRequest(userDID, authRawRequest);
-  console.log(JSON.stringify(authHandlerRequest, null, 2));
+  console.log('Auth Response: ', JSON.stringify(authHandlerRequest.authResponse, null, 2));
+  console.log('Token: ', authHandlerRequest.token);
 }
 
 async function handleAuthRequestWithProfiles() {
@@ -556,14 +566,16 @@ async function handleAuthRequestWithProfiles() {
 
   await dataStorage.credential.saveCredential(credential);
 
-  console.log('================= generate credentialAtomicSigV2 ===================');
+  console.log('================= generate credentialAtomicSigV2 ===================\n');
 
   const proofReqSig: ZeroKnowledgeProofRequest = createKYCAgeCredentialRequest(
     CircuitId.AtomicQuerySigV2,
     credentialRequest
   );
 
-  console.log('=================  credential auth request ===================');
+  console.log(
+    '=================  credential auth request created on server side ===================\n'
+  );
   const verifierDID = 'did:example:123#JUvpllMEYUZ2joO59UNui_XYDqxVqiFLLAJ8klWuPBw';
 
   const authRequest: AuthorizationRequestMessage = {
@@ -583,7 +595,7 @@ async function handleAuthRequestWithProfiles() {
 
   const authRawRequest = new TextEncoder().encode(JSON.stringify(authRequest));
 
-  // * on the user side */
+  //  on the user side
 
   console.log('============== handle auth request ==============');
   const authV2Data = await circuitStorage.loadCircuitData(CircuitId.AuthV2);
@@ -627,7 +639,7 @@ async function handleAuthRequestWithProfilesV3CircuitBeta() {
   });
 
   console.log('=============== user did ===============');
-  console.log(userDID.string());
+  console.log(userDID);
 
   const { did: issuerDID, credential: issuerAuthBJJCredential } =
     await identityWallet.createIdentity({ ...defaultIdentityCreationOptions });
@@ -640,7 +652,7 @@ async function handleAuthRequestWithProfilesV3CircuitBeta() {
 
   await dataStorage.credential.saveCredential(credential);
 
-  console.log('================= generate credentialAtomicV3 ===================');
+  console.log('================= generate credentialAtomicV3 ===================\n');
 
   const proofReq: ZeroKnowledgeProofRequest = {
     id: 19,
@@ -680,7 +692,7 @@ async function handleAuthRequestWithProfilesV3CircuitBeta() {
     }
   };
 
-  console.log('=================  credential auth request ===================');
+  console.log('=================  credential auth request ===================\n');
   const verifierDID = 'did:polygonid:polygon:mumbai:2qLWqgjWa1cGnmPwCreXuPQrfLrRrzDL1evD6AG7p7';
 
   const authRequest: AuthorizationRequestMessage = {
@@ -700,7 +712,7 @@ async function handleAuthRequestWithProfilesV3CircuitBeta() {
 
   const authRawRequest = new TextEncoder().encode(JSON.stringify(authRequest));
 
-  // * on the user side */
+  // * on the user side
 
   console.log('============== handle auth request ==============');
   const authV2Data = await circuitStorage.loadCircuitData(CircuitId.AuthV2);
@@ -753,14 +765,14 @@ async function handleAuthRequestNoIssuerStateTransition() {
 
   await dataStorage.credential.saveCredential(credential);
 
-  console.log('================= generate credentialAtomicSigV2 ===================');
+  console.log('================= generate credentialAtomicSigV2 ===================\n');
 
   const proofReqSig: ZeroKnowledgeProofRequest = createKYCAgeCredentialRequest(
     CircuitId.AtomicQuerySigV2,
     credentialRequest
   );
 
-  console.log('=================  credential auth request ===================');
+  console.log('=================  credential auth request ===================\n');
 
   const authRequest: AuthorizationRequestMessage = {
     id: 'fe6354fe-3db2-48c2-a779-e39c2dda8d90',
@@ -779,7 +791,7 @@ async function handleAuthRequestNoIssuerStateTransition() {
 
   const authRawRequest = new TextEncoder().encode(JSON.stringify(authRequest));
 
-  // * on the user side */
+  // * on the user side
 
   console.log('============== handle auth request ==============');
   const authV2Data = await circuitStorage.loadCircuitData(CircuitId.AuthV2);
