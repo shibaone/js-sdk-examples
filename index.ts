@@ -27,7 +27,7 @@ import dotenv from 'dotenv';
 import { generateRequestData } from './request';
 dotenv.config();
 
-const rhsUrl = process.env.RHS_URL as string;
+const rhsContract = process.env.RHS_CONTRACT_ADDRESS as string;
 const walletKey = process.env.WALLET_KEY as string;
 
 const defaultNetworkConnection = {
@@ -40,8 +40,8 @@ export const defaultIdentityCreationOptions: IdentityCreationOptions = {
   blockchain: core.Blockchain.Shibarium,
   networkId: core.NetworkId.PuppyNet,
   revocationOpts: {
-    type: CredentialStatusType.Iden3ReverseSparseMerkleTreeProof,
-    id: rhsUrl
+    type: CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023,
+    id: rhsContract
   }
 };
 
@@ -57,8 +57,8 @@ function createKYCAgeCredential(did: core.DID) {
     },
     expiration: 12345678888,
     revocationOpts: {
-      type: CredentialStatusType.Iden3ReverseSparseMerkleTreeProof,
-      id: rhsUrl
+      type: CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023,
+      id: rhsContract
     }
   };
   return credentialRequest;
@@ -198,7 +198,7 @@ async function transitState() {
 
   console.log('================= push states to rhs ===================\n');
 
-  await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
+  await identityWallet.publishStateToRHS(issuerDID, rhsContract);
 
   console.log('================= publish to blockchain ===================\n');
 
@@ -254,8 +254,8 @@ async function transitStateThirdPartyDID() {
     blockchain,
     networkId,
     revocationOpts: {
-      type: CredentialStatusType.Iden3ReverseSparseMerkleTreeProof,
-      id: rhsUrl
+      type: CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023,
+      id: rhsContract
     }
   });
 
@@ -267,8 +267,8 @@ async function transitStateThirdPartyDID() {
     blockchain: core.Blockchain.linea,
     networkId: core.NetworkId.test,
     revocationOpts: {
-      type: CredentialStatusType.Iden3ReverseSparseMerkleTreeProof,
-      id: rhsUrl
+      type: CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023,
+      id: rhsContract
     }
   });
   console.log('=============== third party: issuer did ===============');
@@ -287,7 +287,7 @@ async function transitStateThirdPartyDID() {
 
   console.log('================= third party: push states to rhs ===================\n');
 
-  await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
+  await identityWallet.publishStateToRHS(issuerDID, rhsContract);
 
   console.log('================= publish to blockchain ===================\n');
 
@@ -462,7 +462,10 @@ async function handleAuthRequest(useMongoStore = false) {
 
   console.log('================= push states to rhs ===================\n');
 
-  await identityWallet.publishStateToRHS(issuerDID, rhsUrl);
+  await identityWallet.publishRevocationInfoByCredentialStatusType(
+    issuerDID,
+    CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023
+  );
 
   console.log('================= publish to blockchain ===================\n');
 
