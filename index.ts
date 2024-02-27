@@ -198,7 +198,10 @@ async function transitState() {
 
   console.log('================= push states to rhs ===================\n');
 
-  await identityWallet.publishStateToRHS(issuerDID, rhsContract);
+  await identityWallet.publishRevocationInfoByCredentialStatusType(
+    issuerDID,
+    CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023
+  );
 
   console.log('================= publish to blockchain ===================\n');
 
@@ -287,8 +290,10 @@ async function transitStateThirdPartyDID() {
 
   console.log('================= third party: push states to rhs ===================\n');
 
-  await identityWallet.publishStateToRHS(issuerDID, rhsContract);
-
+  await identityWallet.publishRevocationInfoByCredentialStatusType(
+    issuerDID,
+    CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023
+  );
   console.log('================= publish to blockchain ===================\n');
 
   const ethSigner = new ethers.Wallet(

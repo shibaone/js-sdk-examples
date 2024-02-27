@@ -52,14 +52,14 @@ dotenv.config();
 import { MongoDataSourceFactory, MerkleTreeMongodDBStorage } from '@0xpolygonid/mongo-storage';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient, Db } from 'mongodb';
-import { JsonRpcProvider, Wallet } from 'ethers';
+import { Wallet } from 'ethers';
 
 const circuitsFolder = process.env.CIRCUITS_PATH as string;
 const mongoDbConnection = process.env.MONGO_DB_CONNECTION as string;
 const walletKey = process.env.WALLET_KEY as string;
 const rpcUrl = process.env.RPC_URL!;
 const contractAddress = process.env.CONTRACT_ADDRESS!;
-console.log("rpcUrl", rpcUrl)
+
 export function initInMemoryDataStorage({
   contractAddress,
   rpcUrl
@@ -146,8 +146,10 @@ export async function initIdentityWallet(
     CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023,
     new Iden3OnchainSmtCredentialStatusPublisher(storage)
   );
-  
-  return new IdentityWallet(kms, dataStorage, credentialWallet, { credentialStatusPublisherRegistry });
+
+  return new IdentityWallet(kms, dataStorage, credentialWallet, {
+    credentialStatusPublisherRegistry
+  });
 }
 
 export async function initInMemoryDataStorageAndWallets(config: {
@@ -191,13 +193,13 @@ export async function initCredentialWallet(dataStorage: IDataStorage): Promise<C
     CredentialStatusType.Iden3ReverseSparseMerkleTreeProof,
     new RHSResolver(dataStorage.states)
   );
-  
+
   const onchainResolver = new OnChainResolver([
     {
       ...defaultEthConnectionConfig,
       url: rpcUrl,
       contractAddress: contractAddress,
-      chainId: 80001
+      chainId: 157
     }
   ]);
 
