@@ -11,7 +11,8 @@ import {
   core,
   CredentialStatusType,
   IdentityCreationOptions,
-  ProofType
+  ProofType,
+  KmsKeyType
 } from '@0xpolygonid/js-sdk';
 
 import {
@@ -42,7 +43,11 @@ export const defaultIdentityCreationOptions: IdentityCreationOptions = {
   revocationOpts: {
     type: CredentialStatusType.Iden3OnchainSparseMerkleTreeProof2023,
     id: rhsContract
-  }
+  },
+  /*seed: Uint8Array.from(
+    Buffer.from('55196f762d896f6d0741bce214e64d695d1e11c58218963e034e232b59d17dbb', 'hex')
+  ),*/
+  keyType: KmsKeyType.Secp256k1
 };
 
 function createKYCAgeCredential(did: core.DID) {
@@ -116,11 +121,6 @@ async function identityCreation() {
   console.log('=============== key creation ===============');
 
   const { identityWallet } = await initInMemoryDataStorageAndWallets(defaultNetworkConnection);
-  console.log(
-    'defaultIdentityCreationOptions',
-    defaultIdentityCreationOptions,
-    core.Blockchain.Shibarium
-  );
   const { did, credential } = await identityWallet.createIdentity({
     ...defaultIdentityCreationOptions
   });

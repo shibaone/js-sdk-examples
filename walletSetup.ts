@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { proving } from '@iden3/js-jwz';
 import {
-  BjjProvider,
+  Sec256k1Provider,
   CredentialStorage,
   CredentialWallet,
   defaultEthConnectionConfig,
@@ -129,10 +129,9 @@ export async function initIdentityWallet(
   credentialWallet: ICredentialWallet,
   keyStore: AbstractPrivateKeyStore
 ): Promise<IIdentityWallet> {
-  const bjjProvider = new BjjProvider(KmsKeyType.BabyJubJub, keyStore);
+  const ECProvider = new Sec256k1Provider(KmsKeyType.Secp256k1, keyStore);
   const kms = new KMS();
-  kms.registerKeyProvider(KmsKeyType.BabyJubJub, bjjProvider);
-
+  kms.registerKeyProvider(KmsKeyType.Secp256k1, ECProvider);
   const ethSigner = new Wallet(walletKey, (dataStorage.states as EthStateStorage).provider);
 
   const storage = new OnChainRevocationStorage(
